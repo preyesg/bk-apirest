@@ -44,7 +44,14 @@ public class Usuario implements Serializable {
         createAt = new Date();
         status = "Activo";
     }
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "idUsuario", cascade = CascadeType.ALL)
+   //@OneToMany(fetch = FetchType.LAZY, mappedBy = "idUsuario", cascade = CascadeType.ALL)
+    //@JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario",
+            cascade = {
+                    CascadeType.MERGE,
+                    CascadeType.PERSIST,
+                    CascadeType.REMOVE
+            })
     List<Phone> phones;
 
     public String getId() {
