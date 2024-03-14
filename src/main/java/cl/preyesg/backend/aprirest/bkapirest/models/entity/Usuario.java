@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -28,6 +29,17 @@ public class Usuario implements Serializable {
     private String email;
     @Column(name = "status")
     private String status;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Column(name = "token")
+    private String token;
     @NotEmpty(message="no puede ser vacio")
     @Pattern(regexp = "^(?=.*[0-9])"
             + "(?=.*[a-z])(?=.*[A-Z])"
@@ -44,13 +56,12 @@ public class Usuario implements Serializable {
         createAt = new Date();
         status = "Activo";
     }
-   //@OneToMany(fetch = FetchType.LAZY, mappedBy = "idUsuario", cascade = CascadeType.ALL)
-    //@JsonManagedReference
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario",
             cascade = {
                     CascadeType.MERGE,
                     CascadeType.PERSIST,
-                    CascadeType.REMOVE
+                    CascadeType.ALL
             })
     List<Phone> phones;
 
