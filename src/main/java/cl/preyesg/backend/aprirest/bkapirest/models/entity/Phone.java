@@ -1,5 +1,6 @@
 package cl.preyesg.backend.aprirest.bkapirest.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,21 +10,53 @@ public class Phone {
 
     }
 
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE)
     private long id;
 
     private String number;
     private String citycode;
-    private String countrycode;
 
-    /*
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario")
-     */
+
+    public String getContrycode() {
+        return contrycode;
+    }
+
+    public void setContrycode(String contrycode) {
+        this.contrycode = contrycode;
+    }
+
+    private String contrycode;
+
+    public String getCitycode() {
+        return citycode;
+    }
+
+    public void setCitycode(String citycode) {
+        this.citycode = citycode;
+    }
+
     @ManyToOne(cascade= { CascadeType.ALL})
-    @JoinColumns(value = { @JoinColumn(referencedColumnName = "id")}, foreignKey = @ForeignKey(name = "id_usuario"))
+    @JsonBackReference
+    @JoinColumns(value = { @JoinColumn(referencedColumnName = "id")}, foreignKey = @ForeignKey(name = "usuario_id"))
     private Usuario usuario;
+
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
     public long getId() {
         return id;
