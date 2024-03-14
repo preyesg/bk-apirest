@@ -3,9 +3,12 @@ package cl.preyesg.backend.aprirest.bkapirest.controllers;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import cl.preyesg.backend.aprirest.bkapirest.models.entity.Phone;
 import cl.preyesg.backend.aprirest.bkapirest.models.entity.Usuario;
 import cl.preyesg.backend.aprirest.bkapirest.models.services.IUsuarioService;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.json.Json;
+import javax.json.JsonObject;
 
 @RestController
 @RequestMapping("/api")
@@ -47,7 +53,8 @@ public class UsuarioRestController {
                 response.put("errors", errors);
                 return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
             }
-             user = service.save(usuario);
+            usuario.setToken(this.generaJWT(usuario));
+            user = service.save(usuario);
         }
         catch (DataAccessException e){
             if(e instanceof DataIntegrityViolationException){
@@ -62,5 +69,20 @@ public class UsuarioRestController {
         return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
     }
 
+    String generaJWT(Usuario usuario){
+
+        String key = usuario.getPassword();
+        long tiempo = System.currentTimeMillis();
+        String jwt = Jwts.builder()
+                .signWith(SignatureAlgorithm.HS256, key)
+                .setSubject(usuario.getName())
+                .setIssuedAt(new Date(tiempo))
+                .setExpiration(new Date(tiempo+900000))
+                .claim("email", usuario.getEmail())
+                .compact();
+
+        return jwt;
+
+    }
 
 }
